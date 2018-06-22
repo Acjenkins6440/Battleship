@@ -129,15 +129,15 @@ namespace Battleship
 					gameIsActive = false;
 					break;
 				}
-				if(wasTurnSuccessful) {PressEnterToContinue();}
-				if(!comPlayer)
+				if (wasTurnSuccessful) {PressEnterToContinue();}
+				if(!comPlayer && wasTurnSuccessful)
 				{
 					activePlayer = (activePlayer == player1) ? player2 : player1;
 					inactivePlayer = (inactivePlayer == player2) ? player1 : player2;
 				}
-				else
+				else if (comPlayer && wasTurnSuccessful)
 				{
-					player2.Attack();
+					ComputerPlayer.Attack((ComputerPlayer)player2);
 				}
 			}
 
@@ -147,6 +147,7 @@ namespace Battleship
 	  {
 			int numberOfPlayers = GetNumberOfPlayers();
 			SetUpPlayers(numberOfPlayers);
+			//Turn 1 player mode back on by changing the "3" to a "1" in SetUpPlayers
 
 	  }
 
@@ -170,7 +171,7 @@ namespace Battleship
 		public static void SetUpPlayers(int numberOfPlayers)
 		{
 			player1 = new Player();
-			player2 = (numberOfPlayers == 2) ? new Player() : new ComputerPlayer();
+			player2 = (numberOfPlayers == 3) ? new ComputerPlayer() : new Player();
 			player1.getNewBoard();
 			player2.getNewBoard();
 			player2.getEnemyBoard();
@@ -219,7 +220,6 @@ namespace Battleship
 		{
 			try
 			{
-				if(coords == "show"){Board.DisplayBoard(inactivePlayer.board); Console.ReadLine();}
 				string[] coordArray = CleanUpCoords(coords).Split(' ');
 				xCoord = int.Parse(coordArray[0]);
 				yCoord = int.Parse(coordArray[1]);
@@ -251,6 +251,7 @@ namespace Battleship
 
 		public static void ItWasAHit(Player player, Player inactivePlayer, int xCoord, int yCoord)
 		{
+			if(comPlayer){ComputerPlayer.justHitCoords = String.Format("{0} {1}",xCoord,yCoord);}
 			InfoMessages.InfoMessage += ("You got a hit!\n");
 			Board.Change(player, inactivePlayer, xCoord, yCoord, "hit");
 			DidAShipSink(inactivePlayer);
