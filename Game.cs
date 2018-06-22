@@ -5,11 +5,11 @@ namespace Battleship
 {
 	class Game
 	{
-		private static string[] ships = new string[2]{"Scout", "Battleship"};
 		static int xCoord = 0;
 		static int yCoord = 0;
-		static Player player1;
+		public static Player player1;
 		static Player player2;
+		static bool comPlayer;
 		public static void Main()
 		{
 			InitializeGame();
@@ -17,8 +17,7 @@ namespace Battleship
 			bool isValidChoice2 = false;
 			bool isValidChoice3 = false;
 			bool gameIsActive = false;
-			bool step1 = false;
-			bool nextPlayer;
+		  comPlayer = (player2.GetType() == player1.GetType()) ? false : true;
 			Player playerVariable = player1;
 
 			while(playerVariable.areShipsEmpty() == false)
@@ -47,7 +46,7 @@ namespace Battleship
 
 				int shipLength = playerVariable.realShips[isValidChoice1 - 1].Length;
 
-				while(isValidChoice2 == false)
+				while(!isValidChoice2)
 				{
 					Errors.WriteErrorMessage();
 					try
@@ -62,13 +61,13 @@ namespace Battleship
 					}
 				}
 				Console.WriteLine("Excellent, now choose whether you want it facing N, E, S, or W.");
-				while(isValidChoice3 == false)
+				while(!isValidChoice3)
 				{
 					Errors.WriteErrorMessage();
 					try
 					{
 						string direction = Console.ReadLine().ToLower();
-						isValidChoice3 = playerVariable.board.SetShipDirection(xCoord, yCoord, direction, shipLength, playerVariable.board, playerVariable);
+						isValidChoice3 = playerVariable.board.SetShipDirection(xCoord, yCoord, direction, shipLength, playerVariable);
 					}
 					catch(FormatException)
 					{
@@ -82,7 +81,7 @@ namespace Battleship
 					Board.DisplayBoard(playerVariable.board);
 					Errors.WriteErrorMessage();
 					InfoMessages.WriteInfoMessage();
-					if (playerVariable == player1)
+					if (playerVariable == player1 && !comPlayer)
 					{
 						Console.WriteLine("Look at your board and press any key + Enter to let player 2 enter their ships");
 					}
@@ -90,47 +89,55 @@ namespace Battleship
 					Console.ReadLine();
 					Console.Clear();
 				}
-				if (player1.areShipsEmpty() == true && playerVariable == player1)
+				if (player1.areShipsEmpty() && playerVariable == player1 && !comPlayer )
 				{
 					playerVariable = player2;
-					nextPlayer = true;
+				}
+				else if (player1.areShipsEmpty() && comPlayer)
+				{
+					ComputerPlayer.SetUpComputerShips((ComputerPlayer)player2);
+					Errors.ErrorMessage = "";
 				}
 
 			}
 			gameIsActive = true;
-			playerVariable = player1;
+			Player activePlayer = player1;
+			Player inactivePlayer = player2;
 			while(gameIsActive)
 			{
-				while(step1 == false)
+				bool wasTurnSuccessful = false;
+				InfoMessages.InfoMessage += "Player " +((activePlayer == player1) ? "1" : "2")+ ", it is your turn. Select coordinate (x,y) to attack.";
+				ClearBoardAndShowMessages(activePlayer);
+				try
 				{
-					bool wasTurnSuccessful = false;
-					Player activePlayer = (playerVariable == player1) ? player1 : player2;
-					Player inactivePlayer = (playerVariable == player1) ? player2 : player1;
-					InfoMessages.InfoMessage += "Player " +((playerVariable == player1) ? "1" : "2")+ ", it is your turn. Select coordinate (x,y) to attack.";
+					if(PlayerAttack(activePlayer, inactivePlayer, Console.ReadLine()))
+					{
+						wasTurnSuccessful = true;
+					}
+				}
+				catch(Exception)
+				{
+					FormatErrorMessage();
+				}
+				if(wasTurnSuccessful)
+				{
 					ClearBoardAndShowMessages(activePlayer);
-					//implement a thing here to let them type "show" to see their own board and then press enter to go back to the game
-					try
-					{
-						if(PlayerAttack(activePlayer, inactivePlayer, Console.ReadLine()))
-						{
-							playerVariable = (playerVariable == player2) ? player1 : player2;
-							wasTurnSuccessful = true;
-						}
-					}
-					catch(Exception)
-					{
-						FormatErrorMessage();
-					}
-					if(wasTurnSuccessful)
-					{
-						ClearBoardAndShowMessages(activePlayer);
-					}
-					if (DidAnyoneWin(inactivePlayer))
-					{
-						Console.WriteLine("Congrats Player " + ((playerVariable == player1) ? "1" : "2") + ", you won!!!");
-						gameIsActive = false;
-					}
-					if(wasTurnSuccessful) {PressEnterToContinue();}
+				}
+				if (DidAnyoneWin(inactivePlayer))
+				{
+					Console.WriteLine("Congrats Player " + ((activePlayer == player1) ? "1" : "2") + ", you won!!!");
+					gameIsActive = false;
+					break;
+				}
+				if(wasTurnSuccessful) {PressEnterToContinue();}
+				if(!comPlayer)
+				{
+					activePlayer = (activePlayer == player1) ? player2 : player1;
+					inactivePlayer = (inactivePlayer == player2) ? player1 : player2;
+				}
+				else
+				{
+					player2.Attack();
 				}
 			}
 
@@ -140,6 +147,7 @@ namespace Battleship
 	  {
 			int numberOfPlayers = GetNumberOfPlayers();
 			SetUpPlayers(numberOfPlayers);
+
 	  }
 
 		public static int GetNumberOfPlayers()
@@ -162,7 +170,7 @@ namespace Battleship
 		public static void SetUpPlayers(int numberOfPlayers)
 		{
 			player1 = new Player();
-			player2 = (numberOfPlayers == 1) ? new Player() : new ComputerPlayer();
+			player2 = (numberOfPlayers == 2) ? new Player() : new ComputerPlayer();
 			player1.getNewBoard();
 			player2.getNewBoard();
 			player2.getEnemyBoard();
@@ -173,7 +181,14 @@ namespace Battleship
 
 		public static void PressEnterToContinue()
 		{
-			Console.WriteLine("Press Enter to start the next player's turn!");
+			if(!comPlayer)
+			{
+				Console.WriteLine("Press Enter to start the next player's turn!");
+			}
+			else
+			{
+				Console.WriteLine("Press Enter to let the computer have their turn.");
+			}
 			Console.ReadLine();
 		}
 
@@ -193,7 +208,7 @@ namespace Battleship
 			{
 				if (ship.IsSunk())
 				{
-					InfoMessages.InfoMessage += String.Format("\nYou sunk their {0}!", ship.Name);
+					InfoMessages.InfoMessage = String.Format("You sunk their {0}!\n", ship.Name);
 					return true;
 				}
 			}
@@ -204,6 +219,7 @@ namespace Battleship
 		{
 			try
 			{
+				if(coords == "show"){Board.DisplayBoard(inactivePlayer.board); Console.ReadLine();}
 				string[] coordArray = CleanUpCoords(coords).Split(' ');
 				xCoord = int.Parse(coordArray[0]);
 				yCoord = int.Parse(coordArray[1]);
@@ -240,14 +256,14 @@ namespace Battleship
 			DidAShipSink(inactivePlayer);
 		}
 
-		private static int SelectShip(string shipChoice, Player player)
+		public static int SelectShip(string shipChoice, Player player)
 		{
-			if(shipChoice == ships[0].ToLower() || shipChoice == ships[1].ToLower())
+			if(shipChoice == player.ships[0].ToLower() || shipChoice == player.ships[1].ToLower())
 			{
 				string shipz = UppercaseFirst(shipChoice);
 				Console.WriteLine("{0} it is!", shipz);
 				player.removeShip(shipz);
-				return (shipChoice == ships[0].ToLower() ? 1 : 2);
+				return (shipz == player.realShips[0].Name ? 1 : 2);
 			}
 			else
 			{
@@ -262,12 +278,14 @@ namespace Battleship
 			ClearBoard(player);
 			ShowMessages();
 		}
+
 		private static void ClearBoard(Player player)
 		{
 			Console.Clear();
 			Board.DisplayBoard(player.enemyBoard);
 			Board.DisplayBoard(player.board);
 		}
+
 		private static void ShowMessages()
 		{
 			Errors.WriteErrorMessage();
@@ -280,7 +298,7 @@ namespace Battleship
 			return false;
 		}
 
-		private static bool PlaceShip(string coords, Player player)
+		public static bool PlaceShip(string coords, Player player)
 		{
 			string[] coordArray = CleanUpCoords(coords).Split(' ');
 			xCoord = int.Parse(coordArray[0]);

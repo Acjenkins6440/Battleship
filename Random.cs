@@ -10,6 +10,11 @@ namespace Battleship{
       return _random.Next(10);
     }
 
+    public static int NextShip()
+    {
+      return _random.Next(2);
+    }
+
     public static string NextString()
     {
       int directionNumber = _random.Next(4);

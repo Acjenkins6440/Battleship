@@ -14,7 +14,7 @@ namespace Battleship
 		public int scoutCount = 0;
 		public int battleCount = 0;
 
-		public bool SetShipDirection(int x, int y, string direction, int shipLength, Board board, Player player)
+		public bool SetShipDirection(int x, int y, string direction, int shipLength, Player player)
 		{
 			int xDirect = 0;
 			int yDirect = 0;
@@ -27,7 +27,6 @@ namespace Battleship
 				Errors.ErrorMessage = "Please enter one of the 4 cardinal directions only.";
 				return false;
 			}
-			Console.WriteLine(String.Format("{0}, {1}",x+xDirect, y + yDirect));
 			if (!Board.IsOnBoard(x+xDirect, y+yDirect))
 			{
 				Errors.ErrorMessage = "That would put the ship off of the board, please choose another direction.";
@@ -35,12 +34,12 @@ namespace Battleship
 			}
 			if (direction == "n"){x -= (shipLength-1);}
 			if (direction == "w"){y -= (shipLength-1);}
-			if (!NoShipsInPath(shipLength, board, x, y, yDirect)) {return false;}
+			if (!NoShipsInPath(shipLength, player.board, x, y, yDirect)) {return false;}
 			for(int i=0; i < shipLength; i++)
 			{
 				int j = (yDirect == 0) ? 0 : i;
 				int q = (j == 0) ? i : 0;
-				if(board.IsSpaceEmpty(x+q, y+j, board)){}
+				if(player.board.IsSpaceEmpty(x+q, y+j, player.board)){}
 				else
 				{
 					Errors.ErrorMessage = "That direction goes through another ship, please choose a different direction";
@@ -56,12 +55,12 @@ namespace Battleship
 				int q = (j == 0) ? i : 0;
 				direct = (j == 0) ? y : x;
 				p = (j == 0) ? "y" : "x";
-				board.boardArray[x+q, y+j] = 1;
+				player.board.boardArray[x+q, y+j] = 1;
 				if (shipLength == 2) { scoutArray[i] = ((direct == y) ? x+q : y+j); }
 				if (shipLength == 4) { battleshipArray[i] = ((direct == y) ? x+q : y+j); }
 			}
 			setShipArray(ship, ((shipLength == 2) ? scoutArray : battleshipArray), direct, p);
-			DisplayBoard(board);
+			DisplayBoard(player.board);
 			return true;
 		}
 
@@ -122,9 +121,6 @@ namespace Battleship
 				if(Array.Exists(ship.ShipArray, element => element == xCoord) && ship.axis == "y" && ship.direction == yCoord)
 				{
 					ship.hitCount += 1;
-					Console.WriteLine("Holy shit it worked");
-					Console.WriteLine(String.Format("{0}, {1}",ship.Name, ship.hitCount));
-					Console.ReadLine();
 				}
 			}
 		}

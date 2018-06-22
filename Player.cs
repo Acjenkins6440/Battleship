@@ -4,7 +4,7 @@ namespace Battleship {
 
 	class Player
 	{
-		private string[] ships = new string[2] {"Scout", "Battleship"};
+		public string[] ships = new string[2] {"Scout", "Battleship"};
 		public Ship scout = new Scout();
 		public Ship battleship = new Battleship();
 		public Ship[] realShips = new Ship[2];
