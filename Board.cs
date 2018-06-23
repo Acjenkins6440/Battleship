@@ -122,6 +122,12 @@ namespace Battleship
 				{
 					ship.hitCount += 1;
 				}
+				else if(Array.Exists(ship.ShipArray, element => element == yCoord) && ship.axis == "x" && ship.direction == yCoord)
+				{
+					Console.WriteLine("yup");
+					Console.ReadLine();
+					ship.hitCount += 1;
+				}
 			}
 		}
 
