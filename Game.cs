@@ -13,13 +13,12 @@ namespace Battleship
 		public static void Main()
 		{
 			InitializeGame();
-			int isValidChoice1 = 0;
-			bool isValidChoice2 = false;
-			bool isValidChoice3 = false;
-			bool gameIsActive = false;
+			int ShipChosen = 0;
+			bool isInitialPositionChosen = false;
+			bool isShipPlacedOnBoard = false;
+			bool isGameActive = false;
 		  comPlayer = (player2.GetType() == player1.GetType()) ? false : true;
 			Player playerVariable = player1;
-
 			while(playerVariable.areShipsEmpty() == false)
 			{
 				Console.Clear();
@@ -31,28 +30,28 @@ namespace Battleship
 				Console.WriteLine("Which ship would you like to place?");
 				if (playerVariable.areShipsEmpty() == false)
 				{
-					isValidChoice1 = 0;
-					isValidChoice2 = false;
-					isValidChoice3 = false;
+					ShipChosen = 0;
+					isInitialPositionChosen = false;
+					isShipPlacedOnBoard = false;
 				}
-				while(isValidChoice1 == 0)
+				while(ShipChosen == 0)
 				{
 					Errors.WriteErrorMessage();
 					playerVariable.listShips();
 					string shipChoice = Console.ReadLine().ToLower();
-					isValidChoice1 = SelectShip(shipChoice, playerVariable);
+					ShipChosen = SelectShip(shipChoice, playerVariable);
 				}
 				Console.WriteLine("Select starting coordinates in the following format: x,y");
 
-				int shipLength = playerVariable.realShips[isValidChoice1 - 1].Length;
+				int shipLength = playerVariable.realShips[ShipChosen - 1].Length;
 
-				while(!isValidChoice2)
+				while(!isInitialPositionChosen)
 				{
 					Errors.WriteErrorMessage();
 					try
 					{
 						string playerStartCoords = Console.ReadLine().ToLower();
-						isValidChoice2 = PlaceShip(playerStartCoords, playerVariable);
+						isInitialPositionChosen = PlaceShip(playerStartCoords, playerVariable);
 					}
 					catch(Exception)
 					{
@@ -61,19 +60,18 @@ namespace Battleship
 					}
 				}
 				Console.WriteLine("Excellent, now choose whether you want it facing N, E, S, or W.");
-				while(!isValidChoice3)
+				while(!isShipPlacedOnBoard)
 				{
 					Errors.WriteErrorMessage();
 					try
 					{
 						string direction = Console.ReadLine().ToLower();
-						isValidChoice3 = playerVariable.board.SetShipDirection(xCoord, yCoord, direction, shipLength, playerVariable);
+						isShipPlacedOnBoard = playerVariable.board.SetShipDirection(xCoord, yCoord, direction, shipLength, playerVariable);
 					}
 					catch(FormatException)
 					{
 						Errors.ErrorMessage = "Please only write 'N', 'E', 'S', or 'W'";
 					}
-
 				}
 				if (playerVariable.areShipsEmpty() == true)
 				{
@@ -100,20 +98,17 @@ namespace Battleship
 				}
 
 			}
-			gameIsActive = true;
+			isGameActive = true;
 			Player activePlayer = player1;
 			Player inactivePlayer = player2;
-			while(gameIsActive)
+			while(isGameActive)
 			{
 				bool wasTurnSuccessful = false;
 				InfoMessages.InfoMessage += "Player " +((activePlayer == player1) ? "1" : "2")+ ", it is your turn. Select coordinate (x,y) to attack.";
 				ClearBoardAndShowMessages(activePlayer);
 				try
 				{
-					if(PlayerAttack(activePlayer, inactivePlayer, Console.ReadLine()))
-					{
-						wasTurnSuccessful = true;
-					}
+					wasTurnSuccessful = (PlayerAttack(activePlayer, inactivePlayer, Console.ReadLine()));
 				}
 				catch(Exception)
 				{
@@ -126,7 +121,7 @@ namespace Battleship
 				if (DidAnyoneWin(inactivePlayer))
 				{
 					Console.WriteLine("Congrats Player " + ((activePlayer == player1) ? "1" : "2") + ", you won!!!");
-					gameIsActive = false;
+					isGameActive = false;
 					Console.ReadLine();
 					break;
 				}
@@ -262,10 +257,10 @@ namespace Battleship
 		{
 			if(shipChoice == player.ships[0].ToLower() || shipChoice == player.ships[1].ToLower())
 			{
-				string shipz = UppercaseFirst(shipChoice);
-				Console.WriteLine("{0} it is!", shipz);
-				player.removeShip(shipz);
-				return (shipz == player.realShips[0].Name ? 1 : 2);
+				shipChoice = UppercaseFirst(shipChoice);
+				Console.WriteLine("{0} it is!", shipChoice);
+				player.removeShip(shipChoice);
+				return (shipChoice == player.realShips[0].Name ? 1 : 2);
 			}
 			else
 			{

@@ -19,15 +19,15 @@ namespace Battleship
 			int xEndPoint = 0;
 			int yEndPoint = 0;
 			if(direction == "e" || direction == "w")
-			{yEndPoint = ChangeDirectionIntoCoords(direction, shipLength);}
+			{yEndPoint = ChangeDirectionIntoCoords(direction, shipLength) + yCoord;}
 			else if(direction == "s" || direction == "n")
-			{xEndPoint = ChangeDirectionIntoCoords(direction, shipLength);}
+			{xEndPoint = ChangeDirectionIntoCoords(direction, shipLength) + xCoord;}
 			else
 			{
 				Errors.ErrorMessage = "Please enter one of the 4 cardinal directions only.";
 				return false;
 			}
-			if (!Board.IsOnBoard(xCoord+xEndPoint, yCoord+yEndPoint))
+			if (!Board.IsOnBoard(xEndPoint, yEndPoint))
 			{
 				Errors.ErrorMessage = "That would put the ship off of the board, please choose another direction.";
 				return false;
@@ -37,16 +37,21 @@ namespace Battleship
 			if (!NoShipsInPath(shipLength, player.board, xCoord, yCoord, yEndPoint)) {return false;}
 			ship = (shipLength == 2) ? player.realShips[0] : player.realShips[1];
 			string axis = "";
-			for(int i=0; i < shipLength; i++)
-				//also add the ship's coords to the ship's array
+			for(int i = 0; i < shipLength; i++)
 			{
 				int addToYCoord = (yEndPoint == 0) ? 0 : i;
 				int addToXCoord = (addToYCoord == 0) ? i : 0;
 				direct = (addToYCoord == 0) ? yCoord : xCoord;
 				axis = (addToYCoord == 0) ? "y" : "x";
 				player.board.boardArray[xCoord+addToXCoord, yCoord+addToYCoord] = 1;
-				if (shipLength == 2) { scoutArray[i] = ((direct == yCoord) ? xCoord+addToXCoord : yCoord+addToYCoord); }
-				if (shipLength == 4) { battleshipArray[i] = ((direct == yCoord) ? xCoord+addToXCoord : yCoord+addToYCoord); }
+				if (shipLength == 2)
+				{
+					scoutArray[i] = ((axis == "y") ? xCoord+addToXCoord : yCoord+addToYCoord);
+				}
+				if (shipLength == 4)
+				{
+					 battleshipArray[i] = ((axis =="y") ? xCoord+addToXCoord : yCoord+addToYCoord);
+				 }
 			}
 			setShipArray(ship, ((shipLength == 2) ? scoutArray : battleshipArray), direct, axis);
 			DisplayBoard(player.board);
@@ -59,7 +64,7 @@ namespace Battleship
 			{
 				int addToYCoord = (yEndPoint == 0) ? 0 : i;
 				int addToXCoord = (addToYCoord == 0) ? i : 0;
-				if(!board.IsSpaceEmpty(x + addToXCoord, y + addToYCoord, board))
+				if((!board.IsSpaceEmpty(x + addToXCoord, y + addToYCoord, board) && i != 0) || (!board.IsSpaceEmpty(x,y,board) && i == 0))
 				{
 					Errors.ErrorMessage = "That direction goes through another ship, please choose a different direction";
 					return false;
