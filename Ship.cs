@@ -5,7 +5,7 @@ namespace Battleship {
 	public class Ship
 	{
 		public string axis;
-		public int direction;
+		public int axisValue;
 		public int hitCount = 0;
 		public bool sunk = false;
 

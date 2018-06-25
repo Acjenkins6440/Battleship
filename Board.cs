@@ -14,63 +14,52 @@ namespace Battleship
 		public int scoutCount = 0;
 		public int battleCount = 0;
 
-		public bool SetShipDirection(int x, int y, string direction, int shipLength, Player player)
+		public bool SetShipDirection(int xCoord, int yCoord, string direction, int shipLength, Player player)
 		{
-			int xDirect = 0;
-			int yDirect = 0;
+			int xEndPoint = 0;
+			int yEndPoint = 0;
 			if(direction == "e" || direction == "w")
-			{yDirect = ChangeDirectionIntoCoords(direction, shipLength);}
+			{yEndPoint = ChangeDirectionIntoCoords(direction, shipLength);}
 			else if(direction == "s" || direction == "n")
-			{xDirect = ChangeDirectionIntoCoords(direction, shipLength);}
+			{xEndPoint = ChangeDirectionIntoCoords(direction, shipLength);}
 			else
 			{
 				Errors.ErrorMessage = "Please enter one of the 4 cardinal directions only.";
 				return false;
 			}
-			if (!Board.IsOnBoard(x+xDirect, y+yDirect))
+			if (!Board.IsOnBoard(xCoord+xEndPoint, yCoord+yEndPoint))
 			{
 				Errors.ErrorMessage = "That would put the ship off of the board, please choose another direction.";
 				return false;
 			}
-			if (direction == "n"){x -= (shipLength-1);}
-			if (direction == "w"){y -= (shipLength-1);}
-			if (!NoShipsInPath(shipLength, player.board, x, y, yDirect)) {return false;}
-			for(int i=0; i < shipLength; i++)
-			{
-				int j = (yDirect == 0) ? 0 : i;
-				int q = (j == 0) ? i : 0;
-				if(player.board.IsSpaceEmpty(x+q, y+j, player.board)){}
-				else
-				{
-					Errors.ErrorMessage = "That direction goes through another ship, please choose a different direction";
-					return false;
-				}
-			}
+			if (direction == "n"){xCoord -= (shipLength-1);}
+			if (direction == "w"){yCoord -= (shipLength-1);}
+			if (!NoShipsInPath(shipLength, player.board, xCoord, yCoord, yEndPoint)) {return false;}
 			ship = (shipLength == 2) ? player.realShips[0] : player.realShips[1];
-			string p = "";
+			string axis = "";
 			for(int i=0; i < shipLength; i++)
 				//also add the ship's coords to the ship's array
 			{
-				int j = (yDirect == 0) ? 0 : i;
-				int q = (j == 0) ? i : 0;
-				direct = (j == 0) ? y : x;
-				p = (j == 0) ? "y" : "x";
-				player.board.boardArray[x+q, y+j] = 1;
-				if (shipLength == 2) { scoutArray[i] = ((direct == y) ? x+q : y+j); }
-				if (shipLength == 4) { battleshipArray[i] = ((direct == y) ? x+q : y+j); }
+				int addToYCoord = (yEndPoint == 0) ? 0 : i;
+				int addToXCoord = (addToYCoord == 0) ? i : 0;
+				direct = (addToYCoord == 0) ? yCoord : xCoord;
+				axis = (addToYCoord == 0) ? "y" : "x";
+				player.board.boardArray[xCoord+addToXCoord, yCoord+addToYCoord] = 1;
+				if (shipLength == 2) { scoutArray[i] = ((direct == yCoord) ? xCoord+addToXCoord : yCoord+addToYCoord); }
+				if (shipLength == 4) { battleshipArray[i] = ((direct == yCoord) ? xCoord+addToXCoord : yCoord+addToYCoord); }
 			}
-			setShipArray(ship, ((shipLength == 2) ? scoutArray : battleshipArray), direct, p);
+			setShipArray(ship, ((shipLength == 2) ? scoutArray : battleshipArray), direct, axis);
 			DisplayBoard(player.board);
 			return true;
 		}
 
-		public static bool NoShipsInPath(int shipLength, Board board, int x, int y, int yDirect)
+		public static bool NoShipsInPath(int shipLength, Board board, int x, int y, int yEndPoint)
 		{
 			for (int i=0; i< shipLength; i++)
 			{
-				int j = (yDirect == 0) ? 0 : i;
-				int q = (j == 0) ? i : 0;
-				if(!board.IsSpaceEmpty(x + q, y + j, board))
+				int addToYCoord = (yEndPoint == 0) ? 0 : i;
+				int addToXCoord = (addToYCoord == 0) ? i : 0;
+				if(!board.IsSpaceEmpty(x + addToXCoord, y + addToYCoord, board))
 				{
 					Errors.ErrorMessage = "That direction goes through another ship, please choose a different direction";
 					return false;
@@ -84,15 +73,15 @@ namespace Battleship
 			return (direction == "e" || direction == "s") ?  shipLength - 1 : (-1 * (shipLength - 1));
 		}
 
-		public static void setShipArray(Ship ship, int[] arr, int direction, string cons)
+		public static void setShipArray(Ship ship, int[] arr, int axisValue, string cons)
 		{
 			if(arr.Length == 2)
 			{
-				Scout.SetArray(arr[0], arr[1], direction, cons, (Scout)ship);
+				Scout.SetArray(arr[0], arr[1], axisValue, cons, (Scout)ship);
 			}
 			else
 			{
-				Battleship.SetArray(arr[0], arr[1], arr[2], arr[3], direction, cons, (Battleship)ship);
+				Battleship.SetArray(arr[0], arr[1], arr[2], arr[3], axisValue, cons, (Battleship)ship);
 			}
 
 		}
@@ -118,14 +107,12 @@ namespace Battleship
 		{
 			foreach(Ship ship in player.realShips)
 			{
-				if(Array.Exists(ship.ShipArray, element => element == xCoord) && ship.axis == "y" && ship.direction == yCoord)
+				if(Array.Exists(ship.ShipArray, element => element == xCoord) && ship.axis == "y" && ship.axisValue == yCoord)
 				{
 					ship.hitCount += 1;
 				}
-				else if(Array.Exists(ship.ShipArray, element => element == yCoord) && ship.axis == "x" && ship.direction == yCoord)
+				else if(Array.Exists(ship.ShipArray, element => element == yCoord) && ship.axis == "x" && ship.axisValue == xCoord)
 				{
-					Console.WriteLine("yup");
-					Console.ReadLine();
 					ship.hitCount += 1;
 				}
 			}

@@ -127,6 +127,7 @@ namespace Battleship
 				{
 					Console.WriteLine("Congrats Player " + ((activePlayer == player1) ? "1" : "2") + ", you won!!!");
 					gameIsActive = false;
+					Console.ReadLine();
 					break;
 				}
 				if (wasTurnSuccessful) {PressEnterToContinue();}
