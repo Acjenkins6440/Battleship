@@ -25,7 +25,7 @@ namespace Battleship {
       else{coords = FormatCoords(xCoord, yCoord - 1);}
       return coords;
     }
-
+    
     public string FormatCoords(int xCoord, int yCoord) => String.Format("{0},{1}", xCoord, yCoord);
 
     public int CoordsStringToInt(string coords) => int.Parse(coords);
@@ -35,9 +35,10 @@ namespace Battleship {
     public static void Attack(ComputerPlayer player)
     {
       bool wasTurnSuccessful = false;
-      string coords = (findingHitShip) ? player.ChoiceAfterAHit() : player.ChooseCoordinateSet();
+      string coords;
       do
       {
+        coords = (findingHitShip) ? player.ChoiceAfterAHit() : player.ChooseCoordinateSet();
         wasTurnSuccessful = Game.PlayerAttack(player, Game.player1, coords);
       } while (!wasTurnSuccessful);
       findingHitShip = (findingHitShip ) ? true : false;

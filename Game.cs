@@ -13,12 +13,13 @@ namespace Battleship
 		public static void Main()
 		{
 			InitializeGame();
-			int ShipChosen = 0;
+			int shipChosen = 0;
 			bool isInitialPositionChosen = false;
 			bool isShipPlacedOnBoard = false;
 			bool isGameActive = false;
 		  comPlayer = (player2.GetType() == player1.GetType()) ? false : true;
 			Player playerVariable = player1;
+
 			while(playerVariable.areShipsEmpty() == false)
 			{
 				Console.Clear();
@@ -30,20 +31,20 @@ namespace Battleship
 				Console.WriteLine("Which ship would you like to place?");
 				if (playerVariable.areShipsEmpty() == false)
 				{
-					ShipChosen = 0;
+					shipChosen = 0;
 					isInitialPositionChosen = false;
 					isShipPlacedOnBoard = false;
 				}
-				while(ShipChosen == 0)
+				while(shipChosen == 0)
 				{
 					Errors.WriteErrorMessage();
 					playerVariable.listShips();
 					string shipChoice = Console.ReadLine().ToLower();
-					ShipChosen = SelectShip(shipChoice, playerVariable);
+					shipChosen = SelectShip(shipChoice, playerVariable);
 				}
 				Console.WriteLine("Select starting coordinates in the following format: x,y");
 
-				int shipLength = playerVariable.realShips[ShipChosen - 1].Length;
+				int shipLength = playerVariable.realShips[shipChosen - 1].Length;
 
 				while(!isInitialPositionChosen)
 				{
@@ -144,7 +145,6 @@ namespace Battleship
 			int numberOfPlayers = GetNumberOfPlayers();
 			SetUpPlayers(numberOfPlayers);
 			//Turn 1 player mode back on by changing the "3" to a "1" in SetUpPlayers
-
 	  }
 
 		public static int GetNumberOfPlayers()
@@ -167,7 +167,7 @@ namespace Battleship
 		public static void SetUpPlayers(int numberOfPlayers)
 		{
 			player1 = new Player();
-			player2 = (numberOfPlayers == 3) ? new ComputerPlayer() : new Player();
+			player2 = (numberOfPlayers == 1) ? new ComputerPlayer() : new Player();
 			player1.getNewBoard();
 			player2.getNewBoard();
 			player2.getEnemyBoard();
@@ -203,7 +203,11 @@ namespace Battleship
 		{
 			foreach (Ship ship in player.realShips)
 			{
-				if (ship.IsSunk())
+				if (comPlayer && player.GetType() != ComputerPlayer && ship.IsSunk())
+				{
+					InfoMessages.InfoMessage = String.Format("THE COMPUTER sunk your {0}!\n", ship.Name);
+				}
+				else if (ship.IsSunk())
 				{
 					InfoMessages.InfoMessage = String.Format("You sunk their {0}!\n", ship.Name);
 					return true;
