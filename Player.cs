@@ -1,75 +1,86 @@
 using System;
+using System.Collections.Generic;
 
 namespace Battleship {
 
 	class Player
 	{
-		public string[] ships = new string[2] {"Scout", "Battleship"};
-		public Ship scout = new Scout();
-		public Ship battleship = new Battleship();
-		public Ship[] realShips = new Ship[2];
 		public Board board;
 		public Board enemyBoard;
-		private Fleet myFleet;
+		public Fleet myFleet;
 		private string _name;
 
 		public Player(int whichPlayer)
 		{
-			_name = String.Format("Player{0}", whichPlayer);
+			_name = String.Format("Player {0}", whichPlayer);
 			this.CreateNewBoard();
 			this.CreateNewEnemyBoard();
-			this.MakeRealShips();
+			this.CreateFleet(DefaultShipList());
 		}
 
 		public void SetupShips()
 		{
-			Console.Clear();
-			Board.DisplayBoard(this.board);
+			Game.ClearBoard(this);
+			Ship ship = ChooseShip();
+			Console.ReadLine();
 		}
 
-		public Board CreateNewBoard() => board = new Board();
-
-		public Board CreateNewEnemyBoard() => enemyBoard = new Board();
-
-		public void listShips()
+		private Ship ChooseShip()
 		{
-			Console.WriteLine("Ships available:");
-			foreach (string ship in ships)
+			InfoMessages.InfoMessage += this._name + ", you must place your ships.\n";
+			bool isValidEntry = false;
+			string shipChoice = null;
+			while(!isValidEntry)
 			{
-				if (ship != "Empty")
+				DisplayShipChoices();
+				shipChoice = Game.UppercaseFirst(Console.ReadLine());
+				isValidEntry = myFleet.StillInList(shipChoice);
+			}
+			return myFleet.GetShipFromString(shipChoice);
+		}
+
+		private void DisplayShipChoices()
+		{
+			InfoMessages.InfoMessage += "Available Ships: \n";
+			foreach(Ship ship in myFleet.getShipList())
+			{
+				InfoMessages.InfoMessage += ship.Name + "\n";
+			}
+			Game.ShowMessages();
+		}
+
+		private Ship ChosenShip(string shipChoice)
+		{
+			foreach(Ship ship in myFleet.getShipList())
+			{
+				if(ship.Name == shipChoice.ToUpper())
 				{
-					Console.WriteLine(ship);
+					return ship;
 				}
 			}
+			return null;
 		}
 
-		public void removeShip(string shipToRmv)
+		private Board CreateNewBoard() => board = new Board();
+
+		private Board CreateNewEnemyBoard() => enemyBoard = new Board();
+
+		public bool areShipsEmpty() => myFleet.hasEveryShipBeenPlaced();
+
+		private void CreateFleet(List<Ship> shipList)
 		{
-			ships[Array.IndexOf(ships,shipToRmv)] = "Empty";
+			myFleet = new Fleet(shipList);
 		}
 
-		public bool areShipsEmpty()
+		private List<Ship> DefaultShipList()
 		{
-			for (int i = 0; i < ships.Length; i++)
-			{
-				if (ships[i] != "Empty")
-				{
-					return false;
-				}
-			}
-			return true;
-		}
-
-		public void MakeRealShips()
-		{
-			realShips[0] = scout;
-			realShips[1] = battleship;
-		}
-
-		public bool areShipsFull()
-		{
-			return (Array.IndexOf(ships,"Empty") == -1) ? true : false;
+			List<Ship> defaultShips = new List<Ship>(5);
+			defaultShips.Add(new Scout());
+			defaultShips.Add(new Battleship());
+			defaultShips.Add(new Submarine());
+			defaultShips.Add(new Destroyer());
+			defaultShips.Add(new Carrier());
+			return defaultShips;
 		}
 	}
-
 }

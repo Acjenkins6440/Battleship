@@ -8,7 +8,7 @@ namespace Battleship {
 		public int axisValue;
 		public int hitCount = 0;
 		public bool sunk = false;
-		public bool isPlaced = false;
+		private bool isPlaced = false;
 
 		public virtual string Name { get; } = "";
 
@@ -26,5 +26,7 @@ namespace Battleship {
 			}
 			return false;
 		}
+
+		public bool hasBeenPlaced() => isPlaced;
 	}
 }

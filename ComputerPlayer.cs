@@ -54,12 +54,12 @@ namespace Battleship {
 
     public static void SetUpComputerShips(ComputerPlayer player)
     {
-      foreach (string ship in player.ships)
+      foreach (Ship ship in player.myFleet.getShipList())
       {
         bool isInitialPositionChosen = false;
         bool isShipPlacedOnBoard = false;
-        int shipLength = (ship.ToLower() == "scout") ? 2 : 4;
-        Game.SelectShip(ship, player);
+        int shipLength = (ship.Name.ToLower() == "scout") ? 2 : 4;
+        Game.SelectShip(ship.Name, player);
         string[] coordSet = player.ChooseCoordinateSet().Split(',');
         int[] coords = new int[2] {int.Parse(coordSet[0]), int.Parse(coordSet[1])};
         while (!isInitialPositionChosen)

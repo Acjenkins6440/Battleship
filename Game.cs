@@ -22,7 +22,7 @@ namespace Battleship
 			bool isInitialPositionChosen = false;
 			bool isShipPlacedOnBoard = false;
 			bool isGameActive = false;
-		  comPlayer = (player2.GetType() == player1.GetType()) ? false : true;
+			Player playerVariable = new Player(6);
 			foreach(Player player in playerList)
 			{
 				player.SetupShips();
@@ -31,7 +31,7 @@ namespace Battleship
 			{
 				Console.Clear();
 				Board.DisplayBoard(playerVariable.board);
-				if(playerVariable.areShipsFull())
+				if(playerVariable.myFleet == player1.myFleet)
 				{
 					Console.WriteLine("Player {0}, you must choose where to put your ships", (playerVariable == player1) ? 1 : 2);
 				}
@@ -45,13 +45,13 @@ namespace Battleship
 				while(shipChosen == 0)
 				{
 					Errors.DumpErrorMessages();
-					playerVariable.listShips();
+					playerVariable.myFleet.getShipList();
 					string shipChoice = Console.ReadLine().ToLower();
 					shipChosen = SelectShip(shipChoice, playerVariable);
 				}
 				Console.WriteLine("Select starting coordinates in the following format: 'n#' Ex: A4 or J0");
 
-				int shipLength = playerVariable.realShips[shipChosen - 1].ShipLength;
+				int shipLength = playerVariable.myFleet.getShipList()[shipChosen - 1].ShipLength;
 
 				while(!isInitialPositionChosen)
 				{
@@ -173,7 +173,7 @@ namespace Battleship
 
 		public static void SetUpPlayers(int numberOfPlayers)
 		{
-			for (int i = 0; i < numberOfPlayers; i++)
+			for (int i = 1; i < numberOfPlayers + 1; i++)
 			{
 				playerList.Add(new Player(i));
 			}
@@ -200,16 +200,16 @@ namespace Battleship
 		public static bool DidAnyoneWin(Player player)
 		{
 			int winCount = 0;
-			foreach(Ship ship in player.realShips)
+			foreach(Ship ship in player.myFleet.getShipList())
 			{
 				winCount += (ship.sunk) ? 1 : 0;
 			}
-			return (winCount == player.realShips.Length) ? true : false;
+			return (winCount == player.myFleet.getShipList().Count) ? true : false;
 		}
 
 		public static bool DidAShipSink(Player player)
 		{
-			foreach (Ship ship in player.realShips)
+			foreach (Ship ship in player.myFleet.getShipList())
 			{
 				if (comPlayer && player.GetType() != player2.GetType() && ship.IsSunk())
 				{
@@ -269,12 +269,11 @@ namespace Battleship
 
 		public static int SelectShip(string shipChoice, Player player)
 		{
-			if(shipChoice == player.ships[0].ToLower() || shipChoice == player.ships[1].ToLower())
+			if(shipChoice == player.myFleet.getShipList()[0].Name.ToLower() || shipChoice == player.myFleet.getShipList()[1].Name.ToLower())
 			{
 				shipChoice = UppercaseFirst(shipChoice);
 				Console.WriteLine("{0} it is!", shipChoice);
-				player.removeShip(shipChoice);
-				return (shipChoice == player.realShips[0].Name ? 1 : 2);
+				return (shipChoice == player.myFleet.getShipList()[0].Name ? 1 : 2);
 			}
 			else
 			{
@@ -284,20 +283,20 @@ namespace Battleship
 
 		}
 
-		private static void ClearBoardAndShowMessages(Player player)
+		public static void ClearBoardAndShowMessages(Player player)
 		{
 			ClearBoard(player);
 			ShowMessages();
 		}
 
-		private static void ClearBoard(Player player)
+		public static void ClearBoard(Player player)
 		{
 			Console.Clear();
 			Board.DisplayBoard(player.enemyBoard);
 			Board.DisplayBoard(player.board);
 		}
 
-		private static void ShowMessages()
+		public static void ShowMessages()
 		{
 			Errors.DumpErrorMessages();
 			InfoMessages.DumpInfoMessages();

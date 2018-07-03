@@ -36,7 +36,7 @@ namespace Battleship
 			if (direction == "n"){xCoord -= (shipLength-1);}
 			if (direction == "w"){yCoord -= (shipLength-1);}
 			if (!NoShipsInPath(shipLength, player.board, xCoord, yCoord, yEndPoint)) {return false;}
-			ship = (shipLength == 2) ? player.realShips[0] : player.realShips[1];
+			ship = (shipLength == 2) ? player.myFleet.getShipList()[0] : player.myFleet.getShipList()[1];
 			string axis = "";
 			for(int i = 0; i < shipLength; i++)
 			{
@@ -111,7 +111,7 @@ namespace Battleship
 
 		public static void UpdateHitCount(int xCoord, int yCoord, Player player)
 		{
-			foreach(Ship ship in player.realShips)
+			foreach(Ship ship in player.myFleet.getShipList())
 			{
 				if(Array.Exists(ship.ShipArray, element => element == xCoord) && ship.axis == "y" && ship.axisValue == yCoord)
 				{
