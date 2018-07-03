@@ -10,18 +10,26 @@ namespace Battleship {
 		public Ship[] realShips = new Ship[2];
 		public Board board;
 		public Board enemyBoard;
+		private Fleet myFleet;
+		private string _name;
 
-		public Board getNewBoard()
+		public Player(int whichPlayer)
 		{
-			board = new Board();
-			return board;
+			_name = String.Format("Player{0}", whichPlayer);
+			this.CreateNewBoard();
+			this.CreateNewEnemyBoard();
+			this.MakeRealShips();
 		}
 
-		public Board getEnemyBoard()
+		public void SetupShips()
 		{
-			enemyBoard = new Board();
-			return enemyBoard;
+			Console.Clear();
+			Board.DisplayBoard(this.board);
 		}
+
+		public Board CreateNewBoard() => board = new Board();
+
+		public Board CreateNewEnemyBoard() => enemyBoard = new Board();
 
 		public void listShips()
 		{
