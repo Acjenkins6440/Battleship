@@ -20,9 +20,39 @@ namespace Battleship {
 
 		public void SetupShips()
 		{
-			Game.ClearBoard(this);
-			Ship ship = ChooseShip();
-			Console.ReadLine();
+			while(!myFleet.hasEveryShipBeenPlaced())
+			{
+				Game.ClearBoard(this);
+				PlaceShip(ChooseShip());
+				Console.ReadLine();
+			}
+		}
+
+		private void PlaceShip(Ship ship)
+		{
+			Point startingCoordinate = SetStartCoordinate(ship);
+			
+		}
+
+		private Point SetStartCoordinate(Ship ship)
+		{
+			InfoMessages.InfoMessage += ship.Name + " it is! Now select your starting coordinates. Ex: A4 or J9\n";
+			bool isValidEntry = false;
+			while(!isValidEntry)
+			{
+				Game.ShowMessages();
+				string coordChoice = Console.ReadLine().ToUpper();
+				if(ValidStartingCoordinate(coordChoice))
+				{
+						return new Point(coordChoice);
+				}
+			}
+			return null;
+		}
+
+		private bool ValidStartingCoordinate(string coordChoice)
+		{
+			return Point.ValidateCoordinate(coordChoice);
 		}
 
 		private Ship ChooseShip()
@@ -33,7 +63,7 @@ namespace Battleship {
 			while(!isValidEntry)
 			{
 				DisplayShipChoices();
-				shipChoice = Game.UppercaseFirst(Console.ReadLine());
+				shipChoice = Console.ReadLine().ToLower();
 				isValidEntry = myFleet.StillInList(shipChoice);
 			}
 			return myFleet.GetShipFromString(shipChoice);

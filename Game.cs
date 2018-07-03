@@ -29,26 +29,6 @@ namespace Battleship
 			}
 			while(playerVariable.areShipsEmpty() == false)
 			{
-				Console.Clear();
-				Board.DisplayBoard(playerVariable.board);
-				if(playerVariable.myFleet == player1.myFleet)
-				{
-					Console.WriteLine("Player {0}, you must choose where to put your ships", (playerVariable == player1) ? 1 : 2);
-				}
-				Console.WriteLine("Which ship would you like to place?");
-				if (playerVariable.areShipsEmpty() == false)
-				{
-					shipChosen = 0;
-					isInitialPositionChosen = false;
-					isShipPlacedOnBoard = false;
-				}
-				while(shipChosen == 0)
-				{
-					Errors.DumpErrorMessages();
-					playerVariable.myFleet.getShipList();
-					string shipChoice = Console.ReadLine().ToLower();
-					shipChosen = SelectShip(shipChoice, playerVariable);
-				}
 				Console.WriteLine("Select starting coordinates in the following format: 'n#' Ex: A4 or J0");
 
 				int shipLength = playerVariable.myFleet.getShipList()[shipChosen - 1].ShipLength;

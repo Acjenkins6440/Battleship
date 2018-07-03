@@ -41,9 +41,10 @@ namespace Battleship
     {
       foreach(Ship ship in _shipList)
       {
-        if(ship.Name == shipString)
+        if(ship.Name.ToLower() == shipString)
         {
           return ship;
+
         }
       }
       return null;
@@ -53,12 +54,12 @@ namespace Battleship
     {
       foreach(Ship ship in _shipList)
       {
-        if(ship.Name == shipString)
+        if(ship.Name.ToLower() == shipString)
         {
           return true;
         }
       }
-      Errors.ErrorMessage += "That is not a valid choice, please select a ship from the list.";
+      Errors.NotAValidShipChoice();
       return false;
     }
 

@@ -13,7 +13,6 @@ namespace Battleship
 		private Ship ship;
 		public int scoutCount = 0;
 		public int battleCount = 0;
-		private static string[] boardLetters = new string[10]{"A","B","C","D","E","F","G","H","I","J"};
 
 		public bool SetShipDirection(int xCoord, int yCoord, string direction, int shipLength, Player player)
 		{
@@ -134,7 +133,7 @@ namespace Battleship
 			Console.WriteLine("");
 			for(int x = 0; x < _xMax; x++)
 			{
-				Console.Write(String.Format("{0}|  ", boardLetters[x]));
+				Console.Write(String.Format("{0}|  ", Point.boardLetters[x]));
 				for(int y = 0; y < _yMax; y++)
 				{
 					if(board.boardArray[x,y] == 0)
