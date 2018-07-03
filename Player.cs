@@ -31,7 +31,7 @@ namespace Battleship {
 		private void PlaceShip(Ship ship)
 		{
 			Point startingCoordinate = SetStartCoordinate(ship);
-			
+			//do something with Point... this is where you left off.
 		}
 
 		private Point SetStartCoordinate(Ship ship)
