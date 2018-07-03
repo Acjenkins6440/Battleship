@@ -8,10 +8,12 @@ namespace Battleship {
 
     public static bool findingHitShip = false;
 
-    public string ChooseCoordinateSet()
-    { return String.Format("{0},{1}",Random.NextInt(),Random.NextInt());}
+    public string ChooseCoordinateSet() => String.Format("{0},{1}",Random.NextInt(),Random.NextInt());
 
     public string ChooseDirection() => Random.NextString();
+
+    public ComputerPlayer(int whichPlayer) : base(whichPlayer)
+    {}
 
     public string ChoiceAfterAHit()
     {
@@ -25,7 +27,12 @@ namespace Battleship {
       else{coords = FormatCoords(xCoord, yCoord - 1);}
       return coords;
     }
-    
+
+    public string FinishOffFoundShip()
+    {
+      return "hello";
+    }
+
     public string FormatCoords(int xCoord, int yCoord) => String.Format("{0},{1}", xCoord, yCoord);
 
     public int CoordsStringToInt(string coords) => int.Parse(coords);
@@ -49,26 +56,26 @@ namespace Battleship {
     {
       foreach (string ship in player.ships)
       {
-        bool isValidChoice2 = false;
-        bool isValidChoice3 = false;
+        bool isInitialPositionChosen = false;
+        bool isShipPlacedOnBoard = false;
         int shipLength = (ship.ToLower() == "scout") ? 2 : 4;
         Game.SelectShip(ship, player);
         string[] coordSet = player.ChooseCoordinateSet().Split(',');
         int[] coords = new int[2] {int.Parse(coordSet[0]), int.Parse(coordSet[1])};
-        while (!isValidChoice2)
+        while (!isInitialPositionChosen)
         {
           try
           {
-            isValidChoice2 = Game.PlaceShip(String.Format("{0},{1}", coordSet[0], coordSet[1]), player);
+            isInitialPositionChosen = Game.PlaceShip(String.Format("{0},{1}", coordSet[0], coordSet[1]), player);
           }
           catch(Exception){}
         }
-        while (!isValidChoice3)
+        while (!isShipPlacedOnBoard)
         {
           try
           {
             string direction = player.ChooseDirection();
-            isValidChoice3 = player.board.SetShipDirection(coords[0], coords[1], direction, shipLength, player);
+            isShipPlacedOnBoard = player.board.SetShipDirection(coords[0], coords[1], direction, shipLength, player);
           }
           catch(Exception){}
         }
