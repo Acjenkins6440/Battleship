@@ -18,7 +18,7 @@ namespace Battleship
       }
     }
 
-    public static void DumpInfoMessages()
+    public static void WriteInfoMessage()
     {
       Console.Write((infoMessage == "") ? infoMessage : infoMessage + "\n" );
       infoMessage = "";

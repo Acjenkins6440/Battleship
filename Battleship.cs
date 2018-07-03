@@ -6,7 +6,7 @@ namespace Battleship
 	{
 		public override string Name { get; } = "Battleship";
 
-		public override int ShipLength { get; } = 4;
+		public override int Length { get; } = 4;
 
 		public override int[] ShipArray { get; } = new int[4];
 

@@ -18,7 +18,7 @@ namespace Battleship
       }
     }
 
-    public static void DumpErrorMessages()
+    public static void WriteErrorMessage()
     {
       Console.Write((ErrorMessage == "") ? errorMessage : errorMessage + "\n" );
       errorMessage = "";

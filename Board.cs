@@ -4,16 +4,15 @@ namespace Battleship
 {
 	class Board
 	{
-		private const int _xMax = 10;
-		private const int _yMax = 10;
-		private int[,] boardArray = new int[_xMax, _yMax];
+		private const int _xVal = 10;
+		private const int _yVal = 10;
+		private int[,] boardArray = new int[_xVal, _yVal];
 		private int[] scoutArray = new int[2];
 		private int[] battleshipArray = new int[4];
 		private int direct = 0;
 		private Ship ship;
 		public int scoutCount = 0;
 		public int battleCount = 0;
-		private static string[] boardLetters = new string[10]{"A","B","C","D","E","F","G","H","I","J"};
 
 		public bool SetShipDirection(int xCoord, int yCoord, string direction, int shipLength, Player player)
 		{
@@ -94,7 +93,7 @@ namespace Battleship
 
 		public static bool IsOnBoard(int x, int y)
 		{
-			return (x >= 0 && x < _xMax && y >= 0 && y < _yMax) ? true : false;
+			return (x >= 0 && x < _xVal && y >= 0 && y < _yVal) ? true : false;
 		}
 
 		public bool IsSpaceEmpty(int xVal, int yVal, Board board)
@@ -132,10 +131,10 @@ namespace Battleship
 					Console.Write(j+ " ");
 				}
 			Console.WriteLine("");
-			for(int x = 0; x < _xMax; x++)
+			for(int x = 0; x < _xVal; x++)
 			{
-				Console.Write(String.Format("{0}|  ", boardLetters[x]));
-				for(int y = 0; y < _yMax; y++)
+				Console.Write(x+ "|  ");
+				for(int y = 0; y < _yVal; y++)
 				{
 					if(board.boardArray[x,y] == 0)
 					{
