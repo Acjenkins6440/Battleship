@@ -1,6 +1,5 @@
 using System;
 using System.Text.RegularExpressions;
-using System.Collections.Generic;
 
 namespace Battleship
 {
@@ -11,22 +10,16 @@ namespace Battleship
 		public static Player player1;
 		static Player player2;
 		static bool comPlayer;
-		static List<Player> playerList = new List<Player>();
-
 		public static void Main()
 		{
-			InitializePlayers();
-			//SetupGame();
-			//MainGameLoop();
+			InitializeGame();
 			int shipChosen = 0;
 			bool isInitialPositionChosen = false;
 			bool isShipPlacedOnBoard = false;
 			bool isGameActive = false;
 		  comPlayer = (player2.GetType() == player1.GetType()) ? false : true;
-			foreach(Player player in playerList)
-			{
-				player.SetupShips();
-			}
+			Player playerVariable = player1;
+
 			while(playerVariable.areShipsEmpty() == false)
 			{
 				Console.Clear();
@@ -44,18 +37,18 @@ namespace Battleship
 				}
 				while(shipChosen == 0)
 				{
-					Errors.DumpErrorMessages();
+					Errors.WriteErrorMessage();
 					playerVariable.listShips();
 					string shipChoice = Console.ReadLine().ToLower();
 					shipChosen = SelectShip(shipChoice, playerVariable);
 				}
-				Console.WriteLine("Select starting coordinates in the following format: 'n#' Ex: A4 or J0");
+				Console.WriteLine("Select starting coordinates in the following format: x,y");
 
-				int shipLength = playerVariable.realShips[shipChosen - 1].ShipLength;
+				int shipLength = playerVariable.realShips[shipChosen - 1].Length;
 
 				while(!isInitialPositionChosen)
 				{
-					Errors.DumpErrorMessages();
+					Errors.WriteErrorMessage();
 					try
 					{
 						string playerStartCoords = Console.ReadLine().ToLower();
@@ -63,14 +56,14 @@ namespace Battleship
 					}
 					catch(Exception)
 					{
-						Console.WriteLine("You can only enter a letter A-J and a number between 0 and 9 to set the start point of your ship.");
+						Console.WriteLine("You can only enter numbers between 0 and 9, separated by a comma to set the start point of your ship.");
 						Console.WriteLine("Try again.");
 					}
 				}
 				Console.WriteLine("Excellent, now choose whether you want it facing N, E, S, or W.");
 				while(!isShipPlacedOnBoard)
 				{
-					Errors.DumpErrorMessages();
+					Errors.WriteErrorMessage();
 					try
 					{
 						string direction = Console.ReadLine().ToLower();
@@ -85,8 +78,8 @@ namespace Battleship
 				{
 					Console.Clear();
 					Board.DisplayBoard(playerVariable.board);
-					Errors.DumpErrorMessages();
-					InfoMessages.DumpInfoMessages();
+					Errors.WriteErrorMessage();
+					InfoMessages.WriteInfoMessage();
 					if (playerVariable == player1 && !comPlayer)
 					{
 						Console.WriteLine("Look at your board and press any key + Enter to let player 2 enter their ships");
@@ -112,7 +105,7 @@ namespace Battleship
 			while(isGameActive)
 			{
 				bool wasTurnSuccessful = false;
-				InfoMessages.InfoMessage += "Player " +((activePlayer == player1) ? "1" : "2")+ ", it is your turn. Select coordinate (Ex: H4) to attack.";
+				InfoMessages.InfoMessage += "Player " +((activePlayer == player1) ? "1" : "2")+ ", it is your turn. Select coordinate (x,y) to attack.";
 				ClearBoardAndShowMessages(activePlayer);
 				try
 				{
@@ -147,7 +140,7 @@ namespace Battleship
 
 		}
 
-		public static void InitializePlayers()
+		public static void InitializeGame()
 	  {
 			int numberOfPlayers = GetNumberOfPlayers();
 			SetUpPlayers(numberOfPlayers);
@@ -173,16 +166,15 @@ namespace Battleship
 
 		public static void SetUpPlayers(int numberOfPlayers)
 		{
-			for (int i = 0; i < numberOfPlayers; i++)
-			{
-				playerList.Add(new Player(i));
-			}
+			player1 = new Player();
+			player2 = (numberOfPlayers == 1) ? new ComputerPlayer() : new Player();
+			player1.getNewBoard();
+			player2.getNewBoard();
+			player2.getEnemyBoard();
+			player1.getEnemyBoard();
+			player1.MakeRealShips();
+			player2.MakeRealShips();
 		}
-		public static void SetupGame()
-		{
-
-		}
-
 
 		public static void PressEnterToContinue()
 		{
@@ -211,11 +203,9 @@ namespace Battleship
 		{
 			foreach (Ship ship in player.realShips)
 			{
-				if (comPlayer && player.GetType() != player2.GetType() && ship.IsSunk())
+				if (comPlayer && player.GetType() != ComputerPlayer && ship.IsSunk())
 				{
 					InfoMessages.InfoMessage = String.Format("THE COMPUTER sunk your {0}!\n", ship.Name);
-					//ComputerPlayer.findingHitShip == false;
-					return true;
 				}
 				else if (ship.IsSunk())
 				{
@@ -262,7 +252,7 @@ namespace Battleship
 		public static void ItWasAHit(Player player, Player inactivePlayer, int xCoord, int yCoord)
 		{
 			if(comPlayer){ComputerPlayer.justHitCoords = String.Format("{0} {1}",xCoord,yCoord);}
-			InfoMessages.InfoMessage += (comPlayer && player.GetType() == player2.GetType()) ? ("The computer got a hit!\n") : ("You got a hit!\n");
+			InfoMessages.InfoMessage += ("You got a hit!\n");
 			Board.Change(player, inactivePlayer, xCoord, yCoord, "hit");
 			DidAShipSink(inactivePlayer);
 		}
@@ -299,13 +289,13 @@ namespace Battleship
 
 		private static void ShowMessages()
 		{
-			Errors.DumpErrorMessages();
-			InfoMessages.DumpInfoMessages();
+			Errors.WriteErrorMessage();
+			InfoMessages.WriteInfoMessage();
 		}
 
 		private static bool FormatErrorMessage()
 		{
-			Errors.ErrorMessage = "Select starting coordinates in the following format: 'n#' Ex: A4 or J0";
+			Errors.ErrorMessage = "Please enter coordinates between 0 and 9 in the following format: 'x,y'";
 			return false;
 		}
 
@@ -320,7 +310,7 @@ namespace Battleship
 			}
 			else if(Board.IsOnBoard(xCoord, yCoord) == false)
 			{
-				Errors.ErrorMessage = "That is out of the range of the board.  Letters must be between A and J, numbers must be between 0 and 9.";
+				Errors.ErrorMessage = "That is out of the range of the board.  Numbers must be between 0 and 9.";
 				return false;
 			}
 			else
