@@ -18,8 +18,8 @@ namespace Battleship
 			InitializePlayers();
 			//SetupGame();
 			//MainGameLoop();
-			int shipChosen = 0;
-			bool isInitialPositionChosen = false;
+			//int shipChosen = 0;
+			//bool isInitialPositionChosen = false;
 			bool isShipPlacedOnBoard = false;
 			bool isGameActive = false;
 			Player playerVariable = new Player(6);
@@ -29,32 +29,14 @@ namespace Battleship
 			}
 			while(playerVariable.areShipsEmpty() == false)
 			{
-				Console.WriteLine("Select starting coordinates in the following format: 'n#' Ex: A4 or J0");
-
-				int shipLength = playerVariable.myFleet.getShipList()[shipChosen - 1].ShipLength;
-
-				while(!isInitialPositionChosen)
-				{
-					Errors.DumpErrorMessages();
-					try
-					{
-						string playerStartCoords = Console.ReadLine().ToLower();
-						isInitialPositionChosen = PlaceShip(playerStartCoords, playerVariable);
-					}
-					catch(Exception)
-					{
-						Console.WriteLine("You can only enter a letter A-J and a number between 0 and 9 to set the start point of your ship.");
-						Console.WriteLine("Try again.");
-					}
-				}
 				Console.WriteLine("Excellent, now choose whether you want it facing N, E, S, or W.");
 				while(!isShipPlacedOnBoard)
 				{
 					Errors.DumpErrorMessages();
 					try
 					{
-						string direction = Console.ReadLine().ToLower();
-						isShipPlacedOnBoard = playerVariable.board.SetShipDirection(xCoord, yCoord, direction, shipLength, playerVariable);
+						//string direction = Console.ReadLine().ToLower();
+						//isShipPlacedOnBoard = playerVariable.board.SetShipDirection(xCoord, yCoord, direction, shipLength, playerVariable);
 					}
 					catch(FormatException)
 					{
@@ -236,14 +218,14 @@ namespace Battleship
 		public static void AttackMissed(Player player, Player inactivePlayer, int xCoord, int yCoord)
 		{
 			InfoMessages.InfoMessage += "That attack has missed.\n";
-			Board.Change(player, inactivePlayer, xCoord, yCoord, "miss");
+			//Board.Change(player, inactivePlayer, xCoord, yCoord, "miss");
 		}
 
 		public static void ItWasAHit(Player player, Player inactivePlayer, int xCoord, int yCoord)
 		{
 			if(comPlayer){ComputerPlayer.justHitCoords = String.Format("{0} {1}",xCoord,yCoord);}
 			InfoMessages.InfoMessage += (comPlayer && player.GetType() == player2.GetType()) ? ("The computer got a hit!\n") : ("You got a hit!\n");
-			Board.Change(player, inactivePlayer, xCoord, yCoord, "hit");
+			//Board.Change(player, inactivePlayer, xCoord, yCoord, "hit");
 			DidAShipSink(inactivePlayer);
 		}
 

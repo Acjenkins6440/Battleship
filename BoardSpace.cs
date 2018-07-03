@@ -1,29 +1,55 @@
 using System;
 
-namespace battleship
+namespace Battleship
 {
   class BoardSpace
   {
-    private bool attackedAlready = false;
+    private bool hasBeenAttacked = false;
+    private bool hasAShip = false;
 
     public bool ContainsShip()
     {
-      return false;
+      return hasAShip;
     }
-
+    //probably redundant, could just go with !ContainsShip()
     public bool IsEmpty()
     {
-      return false;
+      return true;
     }
 
     public bool WasAttacked()
     {
-      return false;
+      return hasBeenAttacked;
     }
 
-    public string GetDisplayStr()
+    public void Attack()
     {
-      return "";
+      hasBeenAttacked = true;
+    }
+
+    public void PlaceShip()
+    {
+      hasAShip = true;
+    }
+
+    public string DisplayStr()
+    {
+      if(IsEmpty() && WasAttacked())
+      {
+        return "*";
+      }
+      else if(ContainsShip() && WasAttacked())
+      {
+        return "X";
+      }
+      else if (ContainsShip())
+      {
+        return "o";
+      }
+      else
+      {
+        return "-";
+      }
     }
   }
 }

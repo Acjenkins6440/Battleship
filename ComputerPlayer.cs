@@ -58,10 +58,10 @@ namespace Battleship {
       {
         bool isInitialPositionChosen = false;
         bool isShipPlacedOnBoard = false;
-        int shipLength = (ship.Name.ToLower() == "scout") ? 2 : 4;
+        //int shipLength = (ship.Name.ToLower() == "scout") ? 2 : 4;
         Game.SelectShip(ship.Name, player);
         string[] coordSet = player.ChooseCoordinateSet().Split(',');
-        int[] coords = new int[2] {int.Parse(coordSet[0]), int.Parse(coordSet[1])};
+        //int[] coords = new int[2] {int.Parse(coordSet[0]), int.Parse(coordSet[1])};
         while (!isInitialPositionChosen)
         {
           try
@@ -74,8 +74,8 @@ namespace Battleship {
         {
           try
           {
-            string direction = player.ChooseDirection();
-            isShipPlacedOnBoard = player.board.SetShipDirection(coords[0], coords[1], direction, shipLength, player);
+            //string direction = player.ChooseDirection();
+            //isShipPlacedOnBoard = player.board.SetShipDirection(coords[0], coords[1], direction, shipLength, player);
           }
           catch(Exception){}
         }
